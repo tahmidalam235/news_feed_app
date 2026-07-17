@@ -1,17 +1,45 @@
-# news_feed_app
+# News Feed App
 
-A new Flutter project.
+A Flutter News Feed App built with Clean Architecture.
 
-## Getting Started
+## Features
 
-This project is a starting point for a Flutter application.
+- Get All Posts
+- Get Single Post
+- Create Post
+- Update Post (PUT)
+- Partial Update (PATCH)
+- Delete Post
+- Pull To Refresh
+- Material 3 UI
+- Error Handling
+- Loading State
+- Empty State
 
-A few resources to get you started if this is your first Flutter project:
+## Architecture
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+Clean Architecture
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- Presentation
+- Domain
+- Data
+
+## Packages
+
+- flutter_riverpod
+- dio
+- retrofit
+- auto_route
+- json_serializable
+
+## API
+
+https://jsonplaceholder.typicode.com/posts
+
+## Run
+
+```bash
+flutter pub get
+dart run build_runner build --delete-conflicting-outputs
+flutter run
+```
