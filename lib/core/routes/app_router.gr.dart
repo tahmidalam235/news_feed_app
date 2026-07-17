@@ -94,11 +94,11 @@ class HomeRoute extends PageRouteInfo<void> {
 class PostDetailsRoute extends PageRouteInfo<PostDetailsRouteArgs> {
   PostDetailsRoute({
     Key? key,
-    required int postId,
+    required PostModel post,
     List<PageRouteInfo>? children,
   }) : super(
          PostDetailsRoute.name,
-         args: PostDetailsRouteArgs(key: key, postId: postId),
+         args: PostDetailsRouteArgs(key: key, post: post),
          initialChildren: children,
        );
 
@@ -108,30 +108,30 @@ class PostDetailsRoute extends PageRouteInfo<PostDetailsRouteArgs> {
     name,
     builder: (data) {
       final args = data.argsAs<PostDetailsRouteArgs>();
-      return PostDetailsPage(key: args.key, postId: args.postId);
+      return PostDetailsPage(key: args.key, post: args.post);
     },
   );
 }
 
 class PostDetailsRouteArgs {
-  const PostDetailsRouteArgs({this.key, required this.postId});
+  const PostDetailsRouteArgs({this.key, required this.post});
 
   final Key? key;
 
-  final int postId;
+  final PostModel post;
 
   @override
   String toString() {
-    return 'PostDetailsRouteArgs{key: $key, postId: $postId}';
+    return 'PostDetailsRouteArgs{key: $key, post: $post}';
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other is! PostDetailsRouteArgs) return false;
-    return key == other.key && postId == other.postId;
+    return key == other.key && post == other.post;
   }
 
   @override
-  int get hashCode => key.hashCode ^ postId.hashCode;
+  int get hashCode => key.hashCode ^ post.hashCode;
 }

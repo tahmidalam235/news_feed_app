@@ -1,89 +1,63 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../controllers/post_details_controller.dart';
+import '../../data/models/post_model.dart';
 
 @RoutePage()
-class PostDetailsPage extends ConsumerWidget {
-  final int postId;
+class PostDetailsPage extends StatelessWidget {
+  final PostModel post;
 
   const PostDetailsPage({
     super.key,
-    required this.postId,
+    required this.post,
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final post = ref.watch(postDetailsProvider(postId));
-
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Post Details'),
       ),
-      body: post.when(
-        loading: () => const Center(
-          child: CircularProgressIndicator(),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("Post ID : ${post.id}"),
+              const SizedBox(height: 12),
+
+              Text("User ID : ${post.userId}"),
+              const SizedBox(height: 30),
+
+              const Text(
+                "Title",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              const SizedBox(height: 8),
+
+              Text(post.title),
+
+              const SizedBox(height: 24),
+
+              const Text(
+                "Body",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              const SizedBox(height: 8),
+
+              Text(post.body),
+            ],
+          ),
         ),
-        error: (e, _) => Center(
-          child: Text(e.toString()),
-        ),
-        data: (post) {
-          return Padding(
-            padding: const EdgeInsets.all(20),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                Text(
-                  "Post ID : ${post.id}",
-                  style: const TextStyle(fontSize: 18),
-                ),
-                const SizedBox(height: 12),
-
-                Text(
-                  "User ID : ${post.userId}",
-                  style: const TextStyle(fontSize: 18),
-                ),
-
-                const SizedBox(height: 30),
-
-                const Text(
-                  "Title",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
-                ),
-
-                const SizedBox(height: 8),
-
-                Text(
-                  post.title,
-                  style: const TextStyle(fontSize: 16),
-                ),
-
-                const SizedBox(height: 24),
-
-                const Text(
-                  "Body",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
-                ),
-
-                const SizedBox(height: 8),
-
-                Text(
-                  post.body,
-                  style: const TextStyle(fontSize: 16),
-                ),
-              ],
-            ),
-            )
-          );
-        },
       ),
     );
   }

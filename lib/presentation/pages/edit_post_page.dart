@@ -1,23 +1,27 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../data/models/post_model.dart';
-import '../controllers/posts_controller.dart';
+import '../bloc/post_bloc.dart';
+import '../bloc/post_event.dart';
 import '../widgets/app_button.dart';
 import '../widgets/app_text_field.dart';
 
 @RoutePage()
-class EditPostPage extends ConsumerStatefulWidget {
+class EditPostPage extends StatefulWidget {
   final PostModel post;
 
-  const EditPostPage({super.key, required this.post});
+  const EditPostPage({
+    super.key,
+    required this.post,
+  });
 
   @override
-  ConsumerState<EditPostPage> createState() => _EditPostPageState();
+  State<EditPostPage> createState() => _EditPostPageState();
 }
 
-class _EditPostPageState extends ConsumerState<EditPostPage> {
+class _EditPostPageState extends State<EditPostPage> {
   final formKey = GlobalKey<FormState>();
 
   late final TextEditingController titleController;
@@ -37,13 +41,17 @@ class _EditPostPageState extends ConsumerState<EditPostPage> {
 
     setState(() => loading = true);
 
-    await ref
-        .read(postsControllerProvider.notifier)
-        .updatePost(widget.post.id!, titleController.text, bodyController.text);
-
-    if (!mounted) return;
+    context.read<PostBloc>().add(
+      UpdatePostEvent(
+        id: widget.post.id!,
+        title: titleController.text,
+        body: bodyController.text,
+      ),
+    );
 
     setState(() => loading = false);
+
+    if (!mounted) return;
 
     context.router.pop();
   }
@@ -51,21 +59,33 @@ class _EditPostPageState extends ConsumerState<EditPostPage> {
   Future<void> patchUpdate() async {
     setState(() => loading = true);
 
-    await ref
-        .read(postsControllerProvider.notifier)
-        .patchPost(widget.post.id!, titleController.text);
-
-    if (!mounted) return;
+    context.read<PostBloc>().add(
+      PatchPostEvent(
+        id: widget.post.id!,
+        title: titleController.text,
+      ),
+    );
 
     setState(() => loading = false);
+
+    if (!mounted) return;
 
     context.router.pop();
   }
 
   @override
+  void dispose() {
+    titleController.dispose();
+    bodyController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Edit Post")),
+      appBar: AppBar(
+        title: const Text("Edit Post"),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Form(
@@ -73,14 +93,18 @@ class _EditPostPageState extends ConsumerState<EditPostPage> {
           child: Column(
             children: [
               const SizedBox(height: 10),
-
               const Text(
                 "Update Post",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
+                ),
               ),
-
               const SizedBox(height: 25),
-              AppTextField(controller: titleController, hint: "Title"),
+              AppTextField(
+                controller: titleController,
+                hint: "Title",
+              ),
               const SizedBox(height: 20),
               AppTextField(
                 controller: bodyController,
@@ -96,7 +120,7 @@ class _EditPostPageState extends ConsumerState<EditPostPage> {
               const SizedBox(height: 15),
               AppButton(
                 text: "PATCH Update",
-                loading: false,
+                loading: loading,
                 onPressed: patchUpdate,
               ),
             ],

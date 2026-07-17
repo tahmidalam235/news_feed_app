@@ -1,24 +1,24 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../controllers/posts_controller.dart';
+import '../bloc/post_bloc.dart';
+import '../bloc/post_event.dart';
 import '../widgets/app_button.dart';
 import '../widgets/app_text_field.dart';
 
 @RoutePage()
-class CreatePostPage extends ConsumerStatefulWidget {
+class CreatePostPage extends StatefulWidget {
   const CreatePostPage({super.key});
 
   @override
-  ConsumerState<CreatePostPage> createState() => _CreatePostPageState();
+  State<CreatePostPage> createState() => _CreatePostPageState();
 }
 
-class _CreatePostPageState extends ConsumerState<CreatePostPage> {
+class _CreatePostPageState extends State<CreatePostPage> {
   final _formKey = GlobalKey<FormState>();
 
   final titleController = TextEditingController();
-
   final bodyController = TextEditingController();
 
   bool loading = false;
@@ -30,27 +30,41 @@ class _CreatePostPageState extends ConsumerState<CreatePostPage> {
       loading = true;
     });
 
-    await ref
-        .read(postsControllerProvider.notifier)
-        .createPost(title: titleController.text, body: bodyController.text);
-
-    if (!mounted) return;
+    context.read<PostBloc>().add(
+      CreatePostEvent(
+        title: titleController.text,
+        body: bodyController.text,
+      ),
+    );
 
     setState(() {
       loading = false;
     });
 
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text("Post Created")));
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Post Created"),
+      ),
+    );
 
     context.router.pop();
   }
 
   @override
+  void dispose() {
+    titleController.dispose();
+    bodyController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Create Post")),
+      appBar: AppBar(
+        title: const Text("Create Post"),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Form(
@@ -58,14 +72,18 @@ class _CreatePostPageState extends ConsumerState<CreatePostPage> {
           child: Column(
             children: [
               const SizedBox(height: 10),
-
               const Text(
                 "Create New Post",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-
               const SizedBox(height: 25),
-              AppTextField(controller: titleController, hint: "Title"),
+              AppTextField(
+                controller: titleController,
+                hint: "Title",
+              ),
               const SizedBox(height: 20),
               AppTextField(
                 controller: bodyController,
@@ -73,7 +91,11 @@ class _CreatePostPageState extends ConsumerState<CreatePostPage> {
                 maxLines: 5,
               ),
               const SizedBox(height: 30),
-              AppButton(text: "Create", loading: loading, onPressed: create),
+              AppButton(
+                text: "Create",
+                loading: loading,
+                onPressed: create,
+              ),
             ],
           ),
         ),
